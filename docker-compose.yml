@@ -1,0 +1,30 @@
+version: '3'
+services:
+  redis:
+    restart: 'no'
+    image: redis:5.0.3
+    ports:
+      - '16379:6379'
+  mqtt:
+    #image: erlio/docker-vernemq
+    ##image: eclipse-mosquitto:1.6.2
+    image: emqx/emqx:latest
+    restart: 'no'
+    environment:
+      - EMQX_LOADED_PLUGINS='emqx_management,emqx_auth_redis,emqx_recon,emqx_retainer,emqx_dashboard'
+    ports:
+      #- 9001:8080
+      #- 9001:9001
+      - 8083:8083
+      - 1883:1883
+    volumes:
+      #- ./stage/mqtt/vernemq.conf:/etc/vernemq/vernemq.conf
+      ##- ./stage/mqtt_data/:/mosquitto/data/
+      ##- ./stage/log/mqtt/:/mosquitto/log/
+      ##- ./stage/mqtt/:/mosquitto/config/
+      - ./mqtt/emqx.conf:/opt/emqx/etc/emqx.conf
+      - ./mqtt/emqx.acl.conf:/opt/emqx/etc/acl.conf
+      - ./mqtt/emqx_auth_redis.conf:/opt/emqx/etc/plugins/emqx_auth_redis.conf
+    depends_on:
+      - redis
+    network_mode: "host"

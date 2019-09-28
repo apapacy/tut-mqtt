@@ -1,0 +1,26 @@
+pid_file /var/run/mosquitto.pid
+
+persistence true
+persistence_location /var/lib/mosquitto/
+
+log_dest file /var/log/mosquitto/mosquitto.log
+
+include_dir /etc/mosquitto/conf.d
+# Custom options
+allow_duplicate_messages false
+autosave_interval 180
+# nolimit
+max_inflight_messages 1
+max_queued_messages 0
+# <int>h|d|w|m|y
+persistent_client_expiration 1y
+# presistent all messages
+queue_qos0_messages true
+retry_interval 10
+upgrade_outgoing_qos true
+# nolimit
+max_connections -1
+
+listener 1883
+listener 8080
+protocol websockets
