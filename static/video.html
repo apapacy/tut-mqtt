@@ -1,0 +1,68 @@
+<video />
+
+<script>
+
+  var connection = new WebSocket('ws://127.0.0.1:3000/ws');
+  connection.binaryType = "arraybuffer";
+    connection.onopen = function () {
+      console.log('open')
+      // connection is opened and ready to use
+    };
+
+    connection.onerror = function (error) {
+      console.log(error);
+      // an error occurred when sending/receiving data
+    };
+
+    connection.onmessage = function (message) {
+      // try to decode json (I assume that each message
+      // from server is json)
+      try {
+        var json = JSON.parse(message.data);
+      } catch (e) {
+        console.log('This doesn\'t look like a valid JSON: ',
+            message.data);
+        return;
+      }
+      // handle incoming message
+    };
+</script>
+
+
+
+
+
+
+
+<script>
+// Prefer camera resolution nearest to 1280x720.
+var constraints = { audio: true, video: { width: 1280, height: 720 } };
+//webViewSettings.setMediaPlaybackRequiresUserGesture(false);
+
+navigator.mediaDevices.getUserMedia(constraints)
+.then(function(mediaStream) {
+console.log(mediaStream)
+mediaRecorder = new MediaRecorder(mediaStream, {mediaType: 'video/mpeg'});
+mediaRecorder.ondataavailable = function(blob){
+//console.log('====',arguments)
+//console.log(blob.data)
+ blob.data.arrayBuffer().then(buf => {connection.send(buf);})
+}
+setInterval(function(){
+//console.log('----');
+mediaRecorder.requestData()
+//console.log('+++++++++++++++++')
+}, 1000)
+mediaRecorder.start();
+console.log(mediaRecorder)
+var video = document.querySelector('video');
+video.srcObject = mediaStream;
+video.onloadedmetadata = function(e) {
+//video.play();
+};
+})
+.catch(function(err) {
+alert(2)
+console.log(err.name + ": " + err.message);
+}); // always check for errors at the end.
+</script>
