@@ -1,9 +1,36 @@
-<video />
+<video id="video" controls></video>
+https://ffmpeg.org/ffmpeg-formats.html
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<!-- Or if you want a more recent canary version -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
+<script>
+  var video = document.getElementById('video');
+  if(Hls.isSupported()) {
+    var hls = new Hls();
+    hls.loadSource('/index.m3u8');
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED,function() {
+      //video.play();
+  });
+ }
+ // hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+ // When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element through the `src` property.
+ // This is using the built-in support of the plain video element, without using hls.js.
+ // Note: it would be more normal to wait on the 'canplay' event below however on Safari (where you are most likely to find built-in HLS support) the video.src URL must be on the user-driven
+ // white-list before a 'canplay' event will be emitted; the last video event that can be reliably listened-for when the URL is not on the white-list is 'loadedmetadata'.
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = '/index.m3u8';
+    video.addEventListener('loadedmetadata',function() {
+      //video.play();
+    });
+  }
+</script>
+
 
 <script>
 
   var connection = new WebSocket('ws://127.0.0.1:3000/ws');
-  connection.binaryType = "arraybuffer";
+  //connection.binaryType = "arraybuffer";
     connection.onopen = function () {
       console.log('open')
       // connection is opened and ready to use
@@ -42,24 +69,27 @@ var constraints = { audio: true, video: { width: 1280, height: 720 } };
 navigator.mediaDevices.getUserMedia(constraints)
 .then(function(mediaStream) {
 console.log(mediaStream)
-mediaRecorder = new MediaRecorder(mediaStream, {mediaType: 'video/mpeg'});
+mediaRecorder = new MediaRecorder(mediaStream, {
+  mimeType: 'video/webm'
+});
 mediaRecorder.ondataavailable = function(blob){
 //console.log('====',arguments)
-//console.log(blob.data)
- blob.data.arrayBuffer().then(buf => {connection.send(buf);})
+console.log(blob.data)
+connection.send(blob.data)
+ //blob.data.arrayBuffer().then(buf => {connection.send(buf);})
 }
+mediaRecorder.start();
 setInterval(function(){
 //console.log('----');
 mediaRecorder.requestData()
 //console.log('+++++++++++++++++')
-}, 1000)
-mediaRecorder.start();
+}, 10000)
 console.log(mediaRecorder)
-var video = document.querySelector('video');
-video.srcObject = mediaStream;
-video.onloadedmetadata = function(e) {
+//var video = document.querySelector('video');
+//video.srcObject = mediaStream;
+//video.onloadedmetadata = function(e) {
 //video.play();
-};
+//};
 })
 .catch(function(err) {
 alert(2)
