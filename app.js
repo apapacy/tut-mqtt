@@ -22,12 +22,13 @@ app.ws('/ws', (wss, req) => {
     // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP
     const ffmpeg = child_process.spawn('ffmpeg', [
       '-i', '-',
-      '-hls_list_size', '6',
-      '-hls_time', '10',
-      '-f', 'hls',
-
-      './static/index.m3u8'
-    ]);
+            '-profile:v', 'baseline', '-level', '3.0',
+            '-tune', 'zerolatency', '-s', '1280x720', '-b:v', '1400k',
+            '-bufsize', '1400k', '-use_timeline', '1', '-use_template', '1',
+            '-init_seg_name', 'init-\$RepresentationID\$.mp4',
+            '-min_seg_duration', '2000000', '-media_seg_name', 'test-\$RepresentationID\$-\$Number\$.mp4',
+            '-f', 'dash',  './static/stream.mpd'
+      ]);
 
     // If FFmpeg stops for any reason, close the WebSocket connection.
     ffmpeg.on('close', (code, signal) => {

@@ -1,9 +1,10 @@
-<video id="video" controls></video>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="/dush/dash.all.min.js"></script>
+<script src="/dush/video.js"></script>
+<script src="/dush/videojs-dash.min.js"></script>
 <!-- Or if you want a more recent canary version -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script> -->
-<script>
+<!--script>
   var video = document.getElementById('video');
   if(Hls.isSupported()) {
     var hls = new Hls();
@@ -24,4 +25,12 @@
       //video.play();
     });
   }
+</script-->
+
+<video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls> </video>
+
+<script>
+  var player = videojs('example-video');
+  player.src({ src: 'stream.mpd', type: 'application/dash+xml'});
+  player.play();
 </script>
