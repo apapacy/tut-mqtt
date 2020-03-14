@@ -27,7 +27,7 @@ app.ws('/ws', (wss, req) => {
             '-bufsize', '1400k', '-use_timeline', '1', '-use_template', '1',
             '-init_seg_name', 'init-\$RepresentationID\$.mp4',
             '-min_seg_duration', '2000000', '-media_seg_name', 'test-\$RepresentationID\$-\$Number\$.mp4',
-            '-f', 'dash',  './static/stream.mpd'
+            '-f', 'dash',  './static/video/stream.mpd'
       ]);
 
     // If FFmpeg stops for any reason, close the WebSocket connection.

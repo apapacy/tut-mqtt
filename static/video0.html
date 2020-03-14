@@ -27,10 +27,10 @@
   }
 </script-->
 
-<video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls> </video>
+<video id=example-video width=600 height=300  controls> </video>
 
 <script>
   var player = videojs('example-video');
-  player.src({ src: 'stream.mpd', type: 'application/dash+xml'});
+  player.src({ src: '/video/stream.mpd', type: 'application/dash+xml'});
   player.play();
 </script>
